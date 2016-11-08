@@ -1,0 +1,71 @@
+<html>
+  <head>
+      <title>What Week</title>
+      <link id="favicon" rel="shortcut icon" type="image/png" href="favicon.png" />
+      <link href="https://fonts.googleapis.com/css?family=Open+Sans:700" rel="stylesheet">
+      <style>
+          body {
+              vertical-align: middle;
+              background-color: #3498db;
+              overflow-y: hidden;
+          }
+
+          .day {
+              opacity: 0;
+              color: white;
+              font-family: 'Open Sans', sans-serif;
+              font-weight: 700;
+              font-size: 50vw;
+              margin-top: 50vh;
+              line-height: 0;
+              text-align: center;
+          }
+      </style>
+  </head>
+  <body>
+      <p class="day"></p>
+      <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+      <script type="text/javascript">
+          var day;
+          var curr = new Date; // get current date
+          var first = curr.getDate() - curr.getDay(); // First day is the day of the month - the day of the week
+          var last = first + 6; // last day is the first day + 6
+
+          var firstday = new Date(curr.setDate(first)).toISOString();
+          var lastday = new Date(curr.setDate(last)).toISOString();
+          var api = 'AIzaSyArpdb_OtqLF7KE6IUTscWNDXR4iJoN4mw';
+          var id = 'utschools.ca_9o570sdn27bd1f9e2ojhai6p2g@group.calendar.google.com';
+          $.ajax({
+              type: 'GET',
+              url: encodeURI('https://www.googleapis.com/calendar/v3/calendars/' + id +
+                  '/events?key=' + api +
+                  '&timeMin=' + firstday +
+                  '&timeMax=' + lastday),
+              dataType: 'json',
+              success: function(res) {
+                  var items = res.items;
+                  for (var i = 0; i < items.length; i++) {
+                      if (items[i].summary == 'B Day')
+                          day = 'B';
+                      else if (items[i].summary == 'A Day')
+                          day = 'A';
+                  }
+                  if (day)
+                      $('.day').text(day);
+                  else
+                      $('.day').text('C');
+                  $('.day').delay(1000).animate({
+                      opacity: 1
+                  }, 700);
+              },
+              error: function(err) {
+                  console.error(err);
+                  $('.day').text('C');
+                  $('.day').delay(1000).animate({
+                      opacity: 1
+                  }, 700);
+              }
+          });
+      </script>
+  </body>
+</html>
